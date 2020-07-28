@@ -22,7 +22,34 @@ const SearchInterface = (props) => {
 
     const parseSampleData = () => {
         const newPosts = sampleData.data.children;
+        const flairSort = {};
+        let highestScore = 0; // increment then compare against as range
+
         console.log(newPosts);
+
+        newPosts.forEach((postObj) => {
+            const post = postObj.data;
+
+            highestScore = post.score > highestScore ? post.score : highestScore;
+
+            if (post.link_flair_text in Object.keys(newPosts)) {
+                flairSort[post.link_flair_text].push({
+                    title: post.title,
+                    body: post.selftext
+                });
+
+                return;
+            }
+            
+            flairSort[post.link_flair_text] = [];
+            flairSort[post.link_flair_text].push({
+                title: post.title,
+                body: post.selftext
+            });
+        });
+
+        console.log(flairSort);
+        console.log(highestScore);
     }
     
     useEffect(() => {
