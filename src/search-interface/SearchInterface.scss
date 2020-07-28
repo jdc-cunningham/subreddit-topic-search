@@ -1,0 +1,23 @@
+.subreddit-topic-search__search-interface {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex-direction: column;
+    width: 100%;
+    max-width: 500px;
+
+    * {
+        width: 100%;
+        font-size: 1rem;
+    }
+
+    input {
+        padding: 0.5rem;
+    }
+
+    textarea {
+        padding: 0.5rem;
+        margin-top: 0.5rem;
+        min-height: 100px;
+    }
+}
