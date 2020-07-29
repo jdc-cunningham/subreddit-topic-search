@@ -31,11 +31,11 @@ const SearchInterface = (props) => {
 
     // adds clicked row to opened rows
     const toggleAccordionRow = (accordionId) => {
-        console.log('row click');
-        const openAccordionRowsCopy = openAccordionRows;
-        const accordionIdArrIndex = openAccordionRowsCopy.length ? openAccordionRowsCopy.indexOf(accordionId) : null;
-        if (accordionIdArrIndex && accordionIdArrIndex !== -1) {
-            openAccordionRowsCopy.splice(accordionIdArrIndex, 1);
+        const openAccordionRowsCopy = [...openAccordionRows];
+        const accordionIdIndex = openAccordionRowsCopy.indexOf(accordionId);
+
+        if (accordionIdIndex >= 0) {
+            openAccordionRowsCopy.splice(accordionIdIndex, 1);
         } else {
             openAccordionRowsCopy.push(accordionId);
         }
@@ -55,7 +55,6 @@ const SearchInterface = (props) => {
     }
 
     const searchResults = () => {
-        console.log('render call');
         return <div className="subreddit-topic-search__search-results">
             { !Object.keys(matchedPosts).length
                 ? <h2>{ searchStr ? "No results" : `Enter search terms then click "Search"` }</h2>
@@ -74,7 +73,7 @@ const SearchInterface = (props) => {
                                         <img alt="expand row" src={ ChevronDown } />
                                     </div>
                                     <div className="subreddit-topic-search__search-result-body">
-                                        <a href="" target="_blank" rel="noopener noreferrer" >Go to</a>
+                                        <a href={ matchedPost.url } target="_blank" rel="noopener noreferrer" >Go to</a>
                                         <p>{ matchedPost.body }</p>
                                     </div>
                                 </div>
@@ -155,11 +154,6 @@ const SearchInterface = (props) => {
     useEffect(() => {
         parseSampleData(); // response.data
     }, []);
-
-    useEffect(() => {
-        console.log('render')
-        console.log(openAccordionRows);
-    });
 
     return <div className="subreddit-topic-search__search-interface">
         <input type="text" value={searchUrl} onChange={(e) => changeSearchUrl(e) } />

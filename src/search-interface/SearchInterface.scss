@@ -43,6 +43,10 @@
     }
     
     &.open {
+        img {
+            transform: rotate(180deg);
+        }
+
         .subreddit-topic-search__search-result-body {
             display: block;
         }
