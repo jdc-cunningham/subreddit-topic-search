@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './SearchInterface.scss';
 import sampleData from '../sample-data.json';
+import axios from 'axios';
 import ChevronDown from '../assets/icons/chevron-down-black.svg';
 
 const SearchInterface = (props) => {
@@ -83,8 +84,8 @@ const SearchInterface = (props) => {
         </div>;
     }
 
-    const parseSampleData = () => {
-        const newPosts = sampleData.data.children;
+    const parseData = (apiData) => {
+        const newPosts = apiData ? sampleData.data.children : apiData;
         const flairSort = {};
         let highestScore = 0; // increment then compare against as range
 
@@ -150,9 +151,23 @@ const SearchInterface = (props) => {
             setMatchedPosts(searchResults);
         }
     }
+
+    const getData = () => {
+        axios.get('https://www.reddit.com/r/shopify/new/.json')
+            .then((response) => {
+                // handle success
+                if (response.data && response.data.data) {
+                    parseData(response.data);
+                }
+            })
+            .catch((error) => {
+                alert('Error fetching live data');
+                console.log(error);
+            });
+  }
     
     useEffect(() => {
-        parseSampleData(); // response.data
+        getData();
     }, []);
 
     return <div className="subreddit-topic-search__search-interface">
