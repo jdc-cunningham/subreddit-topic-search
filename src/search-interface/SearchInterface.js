@@ -1,12 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import './SearchInterface.scss';
 import sampleData from '../sample-data.json';
+import ChevronDown from '../assets/icons/chevron-down-black.svg';
 
 const SearchInterface = (props) => {
     // const { defaultSearchUrl } = props;
     
     const [searchUrl, setSearchUrl] = useState('https://www.reddit.com/r/shopify/new/.json');
     const [searchStr, setSearchStr] = useState('');
+    const [matchedPosts, setMatchedPosts] = useState({}); // match search terms are keys?
+    const [tagOrder, setTagOrder] = useState([ // precedence of tags to search against
+        'App Dev',
+        'Shopify POS',
+        'Theme Help',
+        'Discussion',
+        'null',
+        'Dropshipping',
+        'Content Marketing'
+    ]);
+    const [sortedData, setSortedData] = useState({});
+    const [openAccordionRows, setOpenAccordionRows] = useState([]);
 
     const changeSearchStr = (e) => {
         setSearchStr(e.target.value);
@@ -16,16 +29,65 @@ const SearchInterface = (props) => {
         setSearchUrl(e.target.value);
     }
 
+    // adds clicked row to opened rows
+    const toggleAccordionRow = (accordionId) => {
+        console.log('row click');
+        const openAccordionRowsCopy = openAccordionRows;
+        const accordionIdArrIndex = openAccordionRowsCopy.length ? openAccordionRowsCopy.indexOf(accordionId) : null;
+        if (accordionIdArrIndex && accordionIdArrIndex !== -1) {
+            openAccordionRowsCopy.splice(accordionIdArrIndex, 1);
+        } else {
+            openAccordionRowsCopy.push(accordionId);
+        }
+
+        setOpenAccordionRows(openAccordionRowsCopy);
+    }
+
+    // https://stackoverflow.com/questions/1349404/generate-random-string-characters-in-javascript
+    const randomStrGenerator = (length) => {
+        var result           = '';
+        var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        var charactersLength = characters.length;
+        for ( var i = 0; i < length; i++ ) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+        return result;
+    }
+
     const searchResults = () => {
-        return null;
+        console.log('render call');
+        return <div className="subreddit-topic-search__search-results">
+            { !Object.keys(matchedPosts).length
+                ? <h2>{ searchStr ? "No results" : `Enter search terms then click "Search"` }</h2>
+                : Object.keys(matchedPosts).map((postsTagGroup) => {
+                        return !matchedPosts[postsTagGroup] ? null :
+                            matchedPosts[postsTagGroup].map((matchedPost, index) => {
+                                let accordionOpen = (openAccordionRows.indexOf(matchedPost.rowId) !== -1) ? 'open' : "";
+                                return <div
+                                    id={ matchedPost.rowId }
+                                    className={"subreddit-topic-search__search-result " + accordionOpen}
+                                    key={ matchedPost.rowId } /* doesn't check if unique/exists */ >
+                                    <div
+                                        className="subreddit-topic-search__search-result-header"
+                                        onClick={ () => toggleAccordionRow(matchedPost.rowId) }>
+                                        <h2>{ matchedPost.title }</h2>
+                                        <img alt="expand row" src={ ChevronDown } />
+                                    </div>
+                                    <div className="subreddit-topic-search__search-result-body">
+                                        <a href="" target="_blank" rel="noopener noreferrer" >Go to</a>
+                                        <p>{ matchedPost.body }</p>
+                                    </div>
+                                </div>
+                            });
+                    })
+                }
+        </div>;
     }
 
     const parseSampleData = () => {
         const newPosts = sampleData.data.children;
         const flairSort = {};
         let highestScore = 0; // increment then compare against as range
-
-        console.log(newPosts);
 
         newPosts.forEach((postObj) => {
             const post = postObj.data;
@@ -44,21 +106,65 @@ const SearchInterface = (props) => {
             flairSort[post.link_flair_text] = [];
             flairSort[post.link_flair_text].push({
                 title: post.title,
-                body: post.selftext
+                body: post.selftext,
+                url: post.url,
+                rowId: randomStrGenerator(24)
             });
         });
 
-        console.log(flairSort);
-        console.log(highestScore);
+        // reorder flairSort
+        const flairResort = {};
+
+        tagOrder.forEach(tag => flairResort[tag] = flairSort[tag]);
+
+        setSortedData(flairResort);
+    }
+
+    const searchPosts = () => {
+        if (searchStr) {
+            let searchArr = searchStr.split('');
+            if (searchStr.indexOf(',')) {
+                searchArr = searchStr.split(',');
+            }
+
+            // basic "algorithm" searches in the order of tags, then title, then body
+            // ideal could be draggable buttons that are toggleable.
+
+            const searchResults = {};
+
+            searchArr.forEach((searchStr) => {
+                Object.keys(sortedData).forEach((tag) => {
+                    let tagPosts = sortedData[tag];
+                    if (tagPosts.length) {
+                        tagPosts.forEach((tagPost) => {
+                            if (tagPost.title.indexOf(searchStr) !== -1 || tagPost.body.indexOf(searchStr) !== -1) {
+                                if (!(tag in searchResults)) {
+                                    searchResults[tag] = [];
+                                }
+                                searchResults[tag].push(tagPost);
+                            }
+                        });
+                    }
+                });
+            });
+
+            setMatchedPosts(searchResults);
+        }
     }
     
     useEffect(() => {
         parseSampleData(); // response.data
     }, []);
 
+    useEffect(() => {
+        console.log('render')
+        console.log(openAccordionRows);
+    });
+
     return <div className="subreddit-topic-search__search-interface">
         <input type="text" value={searchUrl} onChange={(e) => changeSearchUrl(e) } />
         <textarea value={searchStr} onChange={(e) => changeSearchStr(e)} placeholder='Enter search terms separated by commas' />
+        <button type="button" onClick={() => searchPosts()}>Search</button>
         { searchResults() }
     </div>
 }

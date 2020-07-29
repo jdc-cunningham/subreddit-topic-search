@@ -3,6 +3,7 @@
 # misc
 .env
 sample-data.json
+sample-data2.json
 
 # dependencies
 /node_modules
