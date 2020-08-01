@@ -85,7 +85,7 @@ const SearchInterface = (props) => {
     }
 
     const parseData = (apiData) => {
-        const newPosts = apiData ? sampleData.data.children : apiData;
+        const newPosts = !apiData ? sampleData.data.children : apiData.children;
         const flairSort = {};
         let highestScore = 0; // increment then compare against as range
 
@@ -132,10 +132,12 @@ const SearchInterface = (props) => {
 
             const searchResults = {};
 
+            console.log(sortedData);
+
             searchArr.forEach((searchStr) => {
                 Object.keys(sortedData).forEach((tag) => {
                     let tagPosts = sortedData[tag];
-                    if (tagPosts.length) {
+                    if (tagPosts && tagPosts.length) {
                         tagPosts.forEach((tagPost) => {
                             if (tagPost.title.indexOf(searchStr) !== -1 || tagPost.body.indexOf(searchStr) !== -1) {
                                 if (!(tag in searchResults)) {
@@ -153,11 +155,11 @@ const SearchInterface = (props) => {
     }
 
     const getData = () => {
-        axios.get('https://www.reddit.com/r/shopify/new/.json')
+        axios.get(searchUrl)
             .then((response) => {
                 // handle success
                 if (response.data && response.data.data) {
-                    parseData(response.data);
+                    parseData(response.data.data);
                 }
             })
             .catch((error) => {
