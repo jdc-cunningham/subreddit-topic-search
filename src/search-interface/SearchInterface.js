@@ -5,8 +5,6 @@ import axios from 'axios';
 import ChevronDown from '../assets/icons/chevron-down-black.svg';
 
 const SearchInterface = (props) => {
-    // const { defaultSearchUrl } = props;
-    
     const [searchUrl, setSearchUrl] = useState('https://www.reddit.com/r/shopify/new/.json');
     const [searchStr, setSearchStr] = useState('');
     const [matchedPosts, setMatchedPosts] = useState({}); // match search terms are keys?
@@ -23,6 +21,7 @@ const SearchInterface = (props) => {
     const [openAccordionRows, setOpenAccordionRows] = useState([]);
     const searchTags = useRef(null);
     const [saveInProgress, setSaveInProgress] = useState(false);
+    const baseUrl = window.location.href;
 
     const changeSearchStr = (e) => {
         setSearchStr(e.target.value);
@@ -191,12 +190,16 @@ const SearchInterface = (props) => {
         }
     }
 
+    const liveUrl = () => {
+        return window.location.href.indexOf('/live') !== -1;
+    }
+
     useEffect(() => {
         console.log('render');
     });
     
     useEffect(() => {
-        if (window.location.href.indexOf('#live') !== -1) {
+        if (liveUrl()) {
             getData();
         } else {
             parseData();
@@ -209,6 +212,7 @@ const SearchInterface = (props) => {
     }, [matchedPosts]);
 
     return <div className="subreddit-topic-search__search-interface">
+        <a className="subreddit-topic-search__search-interface-link-switcher" href={liveUrl() ? window.location.origin : `${baseUrl}live`}>Switch to {liveUrl() ? 'mock' : 'live'}</a>
         <input type="text" value={searchUrl} onChange={(e) => changeSearchUrl(e) } />
         <textarea ref={searchTags} value={searchStr} onChange={(e) => changeSearchStr(e)} placeholder='Enter search terms separated by commas' />
         <div className="subreddit-topic-search__search-interface-btns">
