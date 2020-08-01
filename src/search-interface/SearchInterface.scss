@@ -34,14 +34,24 @@
     width: 100%;
 }
 
+.subreddit-topic-search__search-result-flair {
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+
+    span {
+        background-color: #87CEEB;
+        color: #080808;
+        padding: 0.25rem;
+        border-radius: 4px;
+        font-size: 0.75rem;
+    }
+}
+
 .subreddit-topic-search__search-result {
     padding: 0.5rem;
     border: 1px solid #000;
     border-radius: 5px;
-
-    &:not(:first-of-type) {
-        margin-top: 1rem;
-    }
+    margin-top: 0.75rem;
     
     &.open {
         img {

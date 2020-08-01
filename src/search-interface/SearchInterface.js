@@ -56,29 +56,34 @@ const SearchInterface = (props) => {
     }
 
     const searchResults = () => {
+        console.log(matchedPosts);
         return <div className="subreddit-topic-search__search-results">
             { !Object.keys(matchedPosts).length
                 ? <h2>{ searchStr ? "No results" : `Enter search terms then click "Search"` }</h2>
                 : Object.keys(matchedPosts).map((postsTagGroup) => {
                         return !matchedPosts[postsTagGroup] ? null :
-                            matchedPosts[postsTagGroup].map((matchedPost, index) => {
-                                let accordionOpen = (openAccordionRows.indexOf(matchedPost.rowId) !== -1) ? 'open' : "";
-                                return <div
-                                    id={ matchedPost.rowId }
-                                    className={"subreddit-topic-search__search-result " + accordionOpen}
-                                    key={ matchedPost.rowId } /* doesn't check if unique/exists */ >
-                                    <div
-                                        className="subreddit-topic-search__search-result-header"
-                                        onClick={ () => toggleAccordionRow(matchedPost.rowId) }>
-                                        <h2>{ matchedPost.title }</h2>
-                                        <img alt="expand row" src={ ChevronDown } />
+                            <>
+                                <div className="subreddit-topic-search__search-result-flair">
+                                    <span>{ postsTagGroup }</span></div>
+                                { matchedPosts[postsTagGroup].map((matchedPost, index) => {
+                                    let accordionOpen = (openAccordionRows.indexOf(matchedPost.rowId) !== -1) ? 'open' : "";
+                                    return <div
+                                        id={ matchedPost.rowId }
+                                        className={"subreddit-topic-search__search-result " + accordionOpen}
+                                        key={ matchedPost.rowId } /* doesn't check if unique/exists */ >
+                                        <div
+                                            className="subreddit-topic-search__search-result-header"
+                                            onClick={ () => toggleAccordionRow(matchedPost.rowId) }>
+                                            <h2>{ matchedPost.title }</h2>
+                                            <img alt="expand row" src={ ChevronDown } />
+                                        </div>
+                                        <div className="subreddit-topic-search__search-result-body">
+                                            <a href={ matchedPost.url } target="_blank" rel="noopener noreferrer" >Go to</a>
+                                            <p>{ matchedPost.body }</p>
+                                        </div>
                                     </div>
-                                    <div className="subreddit-topic-search__search-result-body">
-                                        <a href={ matchedPost.url } target="_blank" rel="noopener noreferrer" >Go to</a>
-                                        <p>{ matchedPost.body }</p>
-                                    </div>
-                                </div>
-                            });
+                                }) }
+                            </>
                     })
                 }
         </div>;
