@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './SearchInterface.scss';
 import sampleData from '../sample-data.json';
 import axios from 'axios';
@@ -21,6 +21,8 @@ const SearchInterface = (props) => {
     ]);
     const [sortedData, setSortedData] = useState({});
     const [openAccordionRows, setOpenAccordionRows] = useState([]);
+    const searchTags = useRef(null);
+    const [saveInProgress, setSaveInProgress] = useState(false);
 
     const changeSearchStr = (e) => {
         setSearchStr(e.target.value);
@@ -56,7 +58,6 @@ const SearchInterface = (props) => {
     }
 
     const searchResults = () => {
-        console.log(matchedPosts);
         return <div className="subreddit-topic-search__search-results">
             { !Object.keys(matchedPosts).length
                 ? <h2>{ searchStr ? "No results" : `Enter search terms then click "Search"` }</h2>
@@ -163,17 +164,57 @@ const SearchInterface = (props) => {
                 alert('Error fetching live data');
                 console.log(error);
             });
-  }
+    }
+
+    const saveTags = () => {
+        setSaveInProgress(true);
+
+        // fake delay
+        setTimeout(() => {
+            let activeTags = searchTags.current.value;
+
+            if (activeTags) {
+                activeTags = activeTags.split(',');
+            }
+
+            localStorage.setItem('subreddit-topic-search-tags', JSON.stringify(activeTags));
+            setSaveInProgress(false);
+        }, 1500);
+    }
+
+    const loadLocalSearchTags = () => {
+        const localSearchTags = localStorage.getItem('subreddit-topic-search-tags');
+        const parsedSavedTags = JSON.parse(localSearchTags);
+
+        if (localSearchTags && Array.isArray(parsedSavedTags)) {
+            setSearchStr(parsedSavedTags.join(','));
+        }
+    }
+
+    useEffect(() => {
+        console.log('render');
+    });
     
     useEffect(() => {
-        // getData();
-        parseData();
+        if (window.location.href.indexOf('#live') !== -1) {
+            getData();
+        } else {
+            parseData();
+        }
     }, []);
+
+    useEffect(() => {
+        // update previous tags
+        loadLocalSearchTags();
+    }, [matchedPosts]);
 
     return <div className="subreddit-topic-search__search-interface">
         <input type="text" value={searchUrl} onChange={(e) => changeSearchUrl(e) } />
-        <textarea value={searchStr} onChange={(e) => changeSearchStr(e)} placeholder='Enter search terms separated by commas' />
-        <button type="button" onClick={() => searchPosts()}>Search</button>
+        <textarea ref={searchTags} value={searchStr} onChange={(e) => changeSearchStr(e)} placeholder='Enter search terms separated by commas' />
+        <div className="subreddit-topic-search__search-interface-btns">
+            <button id="save-tags" type="button" onClick={() => saveTags()} disabled={saveInProgress ? true : false}>Save Tags</button>
+            <button id="search" type="button" onClick={() => searchPosts()}>Search</button>
+        </div>
         { searchResults() }
     </div>
 }
