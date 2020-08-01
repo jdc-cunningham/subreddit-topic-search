@@ -22,6 +22,8 @@ const SearchInterface = (props) => {
     const searchTags = useRef(null);
     const [saveInProgress, setSaveInProgress] = useState(false);
     const baseUrl = window.location.href;
+    const rowKeys = [];
+    const pushedTitles = [];
 
     const changeSearchStr = (e) => {
         setSearchStr(e.target.value);
@@ -53,6 +55,13 @@ const SearchInterface = (props) => {
         for ( var i = 0; i < length; i++ ) {
             result += characters.charAt(Math.floor(Math.random() * charactersLength));
         }
+
+        if (rowKeys.indexOf(result) !== -1) {
+            randomStrGenerator(result); // potential infinite loop
+        }
+
+        rowKeys.push(result);
+
         return result;
     }
 
@@ -140,7 +149,10 @@ const SearchInterface = (props) => {
                                 if (!(tag in searchResults)) {
                                     searchResults[tag] = [];
                                 }
-                                searchResults[tag].push(tagPost);
+                                if (pushedTitles.indexOf(tagPost.title) === -1) {
+                                    searchResults[tag].push(tagPost);
+                                    pushedTitles.push(tagPost.title);
+                                }
                             }
                         });
                     }
