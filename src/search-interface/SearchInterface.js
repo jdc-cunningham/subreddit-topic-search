@@ -85,25 +85,19 @@ const SearchInterface = (props) => {
     }
 
     const parseData = (apiData) => {
-        const newPosts = !apiData ? sampleData.data.children : apiData.children;
+        const newPosts = !apiData ? sampleData.data.children : apiData.data.children;
         const flairSort = {};
         let highestScore = 0; // increment then compare against as range
 
         newPosts.forEach((postObj) => {
             const post = postObj.data;
 
-            highestScore = post.score > highestScore ? post.score : highestScore;
+            highestScore = (post.score > highestScore) ? post.score : highestScore;
 
-            if (post.link_flair_text in Object.keys(newPosts)) {
-                flairSort[post.link_flair_text].push({
-                    title: post.title,
-                    body: post.selftext
-                });
-
-                return;
+            if (!(post.link_flair_text in flairSort)) {
+                flairSort[post.link_flair_text] = [];
             }
-            
-            flairSort[post.link_flair_text] = [];
+
             flairSort[post.link_flair_text].push({
                 title: post.title,
                 body: post.selftext,
@@ -132,8 +126,6 @@ const SearchInterface = (props) => {
 
             const searchResults = {};
 
-            console.log(sortedData);
-
             searchArr.forEach((searchStr) => {
                 Object.keys(sortedData).forEach((tag) => {
                     let tagPosts = sortedData[tag];
@@ -159,7 +151,7 @@ const SearchInterface = (props) => {
             .then((response) => {
                 // handle success
                 if (response.data && response.data.data) {
-                    parseData(response.data.data);
+                    parseData(response.data);
                 }
             })
             .catch((error) => {
@@ -169,7 +161,8 @@ const SearchInterface = (props) => {
   }
     
     useEffect(() => {
-        getData();
+        // getData();
+        parseData();
     }, []);
 
     return <div className="subreddit-topic-search__search-interface">
