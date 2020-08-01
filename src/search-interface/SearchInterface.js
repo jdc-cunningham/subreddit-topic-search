@@ -88,7 +88,7 @@ const SearchInterface = (props) => {
                                         </div>
                                         <div className="subreddit-topic-search__search-result-body">
                                             <a href={ matchedPost.url } target="_blank" rel="noopener noreferrer" >Go to</a>
-                                            <p>{ matchedPost.body }</p>
+                                            { matchedPost.body.split("\n").map(line => <p>{line}</p>) }
                                         </div>
                                     </div>
                                 }) }
