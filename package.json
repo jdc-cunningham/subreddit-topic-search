@@ -34,5 +34,6 @@
   },
   "devDependencies": {
     "node-sass": "^4.14.1"
-  }
+  },
+  "homepage": "http://192.168.1.144/shopify-subreddit-search/"
 }

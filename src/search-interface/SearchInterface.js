@@ -203,7 +203,7 @@ const SearchInterface = (props) => {
     }
 
     const liveUrl = () => {
-        return window.location.href.indexOf('/live') !== -1;
+        return window.location.href.indexOf('?live=true') !== -1;
     }
 
     useEffect(() => {
@@ -224,7 +224,7 @@ const SearchInterface = (props) => {
     }, [matchedPosts]);
 
     return <div className="subreddit-topic-search__search-interface">
-        <a className="subreddit-topic-search__search-interface-link-switcher" href={liveUrl() ? window.location.origin : `${baseUrl}live`}>Switch to {liveUrl() ? 'mock' : 'live'}</a>
+        <a className="subreddit-topic-search__search-interface-link-switcher" href={liveUrl() ? window.location.origin + window.location.pathname : `${baseUrl}?live=true`}>Switch to {liveUrl() ? 'mock' : 'live'}</a>
         <input type="text" value={searchUrl} onChange={(e) => changeSearchUrl(e) } />
         <textarea ref={searchTags} value={searchStr} onChange={(e) => changeSearchStr(e)} placeholder='Enter search terms separated by commas' />
         <div className="subreddit-topic-search__search-interface-btns">
