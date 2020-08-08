@@ -8,9 +8,17 @@ Also you can comment on posts/store them locally for future reference.
 
 This is all using `localStorage` so it's all in your browser.
 
+### Apologies
+
+This has no structure right now eg. "one file" just making it as I go along
+
 ### Demo
 
-[gif]
+![demo of search currently](./08-08-2020-demo.gif)
+
+### Upcoming work/feature
+
+![new feature](./next-feature.png)
 
 ### How to use
 
