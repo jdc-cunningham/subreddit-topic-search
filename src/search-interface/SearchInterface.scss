@@ -73,27 +73,65 @@
     margin-top: 1rem;
 }
 
-.subreddit-topic-search__search-result-flair {
+.subreddit-topic-search__search-result-flair,
+.subreddit-topic-search__search-result-indicators {
+    display: flex;
+    align-items: stretch;
+    justify-content: flex-start;
+    flex-direction: row;
     margin-top: 1.5rem;
     margin-bottom: 0.75rem;
 
     span {
-        background-color: #87CEEB;
-        color: #080808;
-        padding: 0.25rem;
-        border-radius: 4px;
-        font-size: 0.75rem;
+        &.wrapper {
+            display: flex;
+            align-items: stretch;
+            justify-content: flex-start;
+            flex-direction: row;
+            flex: 1;
+
+            &.stats {
+                justify-content: flex-end;
+
+                .stat-group {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+
+                    img {
+                        width: 16px;
+                        height: 16px;
+                        margin-left: 0.25rem;
+                    }
+                }
+            }
+        }
+
+        &:not(.wrapper) {
+            padding: 0.25rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+        }
+
+        &.flair {
+            background-color: #87CEEB;
+            color: #080808;
+        }
     }
 }
 
-.subreddit-topic-search__search-result {
-    padding: 0.5rem;
-    border: 1px solid #000;
-    border-radius: 5px;
+.subreddit-topic-search__search-result-flair {
+    margin-bottom: -0.75rem;
+}
+
+.subreddit-topic-search__search-result-indicators {
+    margin: 0;
     margin-top: 0.75rem;
-    
+}
+
+.subreddit-topic-search__search-result {
     &.open {
-        img {
+        img.toggle-expand-collapse {
             transform: rotate(180deg);
         }
 
@@ -101,6 +139,12 @@
             display: block;
         }
     }
+}
+
+.subreddit-topic-search__search-result-inner-wrapper {
+    padding: 0.5rem;
+    border: 1px solid #808080;
+    border-radius: 5px;
 }
 
 .subreddit-topic-search__search-result-header {

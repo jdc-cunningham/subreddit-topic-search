@@ -2,7 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import './SearchInterface.scss';
 import sampleData from '../sample-data.json';
 import axios from 'axios';
-import ChevronDown from '../assets/icons/chevron-down-black.svg';
+import ChevronDownIcon from '../assets/icons/uxwing-chevron-down-black.svg';
+import CommentIcon from '../assets/icons/flaticon-comment-Freepik.svg';
+import ThumbsUpIcon from '../assets/icons/flaticon-thumbs-up-Pixel-perfect.svg';
+import { timeDiff } from '../utils/datetime';
 
 const SearchInterface = (props) => {
     const [searchUrl, setSearchUrl] = useState('https://www.reddit.com/r/shopify/new/.json');
@@ -73,22 +76,41 @@ const SearchInterface = (props) => {
                         return !matchedPosts[postsTagGroup] ? null :
                             <>
                                 <div className="subreddit-topic-search__search-result-flair">
-                                    <span>{ postsTagGroup }</span></div>
+                                    <span className="flair">{ postsTagGroup }</span>
+                                </div>
                                 { matchedPosts[postsTagGroup].map((matchedPost, index) => {
                                     let accordionOpen = (openAccordionRows.indexOf(matchedPost.rowId) !== -1) ? 'open' : "";
                                     return <div
                                         id={ matchedPost.rowId }
                                         className={"subreddit-topic-search__search-result " + accordionOpen}
-                                        key={ matchedPost.rowId } /* doesn't check if unique/exists */ >
-                                        <div
-                                            className="subreddit-topic-search__search-result-header"
-                                            onClick={ () => toggleAccordionRow(matchedPost.rowId) }>
-                                            <h2>{ matchedPost.title }</h2>
-                                            <img alt="expand row" src={ ChevronDown } />
+                                        key={ matchedPost.rowId } /* doesn't check if unique/exists */
+                                    >
+                                        <div className="subreddit-topic-search__search-result-indicators">
+                                            <span className="wrapper stats">
+                                                <span class="stat-group">
+                                                    { matchedPost.age }
+                                                </span>
+                                                <span class="stat-group">
+                                                    { matchedPost.upvotes }
+                                                    <img src={ ThumbsUpIcon } alt="upvotes icon" />
+                                                </span>
+                                                <span class="stat-group">
+                                                    { matchedPost.comments }
+                                                    <img src={ CommentIcon } alt="comment count icon" />
+                                                </span>
+                                            </span>
                                         </div>
-                                        <div className="subreddit-topic-search__search-result-body">
-                                            <a href={ matchedPost.url } target="_blank" rel="noopener noreferrer" >Go to</a>
-                                            { matchedPost.body.split("\n").map(line => <p>{line}</p>) }
+                                        <div className="subreddit-topic-search__search-result-inner-wrapper">
+                                            <div
+                                                className="subreddit-topic-search__search-result-header"
+                                                onClick={ () => toggleAccordionRow(matchedPost.rowId) }>
+                                                <h2>{ matchedPost.title }</h2>
+                                                <img className="toggle-expand-collapse" alt="expand row" src={ ChevronDownIcon } />
+                                            </div>
+                                            <div className="subreddit-topic-search__search-result-body">
+                                                <a href={ matchedPost.url } target="_blank" rel="noopener noreferrer">Go to</a>
+                                                { matchedPost.body.split("\n").map(line => <p>{line}</p>) }
+                                            </div>
                                         </div>
                                     </div>
                                 }) }
@@ -113,10 +135,13 @@ const SearchInterface = (props) => {
             }
 
             flairSort[post.link_flair_text].push({
+                rowId: randomStrGenerator(24),
                 title: post.title,
                 body: post.selftext,
                 url: post.url,
-                rowId: randomStrGenerator(24)
+                upvotes: post.score,
+                age: timeDiff(Date.now(), post.created_utc),
+                comments: post.num_comments
             });
         });
 
